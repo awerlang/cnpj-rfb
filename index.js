@@ -1,6 +1,6 @@
 process.on('uncaughtException', function (err) {
-  console.log(err);
-  process.exit(1)
+    console.log(err);
+    process.exit(1)
 })
 
 process.on('unhandledRejection', function(reason, p){
@@ -48,17 +48,15 @@ function fetchOne(line) {
 
     return cnpj.fetchCnpj(line, cookies)
         .then(response => {
-            cnpj.backup(line, 'cnpj', response.cnpj.body)
-            if (response.qsa) {
-                cnpj.backup(line, 'qsa', response.qsa.body)
-            }
-            
-            const results = cnpj.processCnpj(response)
-            cnpj.found(line, results)
+            const {qsa} = cnpj.processCnpj(response)
+            const {info} = response
+            cnpj.found(line, Object.assign(info, { qsa }))
         })
         .catch(err => {
             cnpj.failed(line, err)
             console.error(err)
-            throw err
+            if (err.unrecoverable) {
+                throw err
+            }
         })
 }
