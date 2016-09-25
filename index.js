@@ -24,12 +24,20 @@ const rl = readline.createInterface({
 
 let nextTask = Promise.resolve()
 
+const processed = {}
 rl.on('line', function (line) {
     line = line.replace(/[ \.\-/]/g, '')
     if (!line) {
         rl.close()
         return
     }
+    if (line.length === 11) {
+        return
+    }
+    if (processed[line]) {
+        return
+    }
+    processed[line] = true
     if (cnpj.exists(line)) {
         console.log('Processing: ', line, 'cached, skipping...')
         return
@@ -55,7 +63,7 @@ function fetchOne(line) {
         .catch(err => {
             cnpj.failed(line, err)
             console.error(err)
-            if (err.unrecoverable) {
+            if (err.unrecoverable || err.code === 'ECONNRESET') {
                 throw err
             }
         })
