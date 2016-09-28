@@ -1,10 +1,17 @@
+const {cleanup} = require('./lib/index')
+
 process.on('uncaughtException', function (err) {
     console.log(err);
-    process.exit(1)
+    cleanup(() => {
+        process.exit(1)
+    })
 })
 
 process.on('unhandledRejection', function(reason, p){
-    console.log("Possibly Unhandled Rejection at: Promise ", p, " reason: ", reason);
+    console.log("Unhandled Rejection, reason: ", reason);
+    cleanup(() => {
+        process.exit(1)
+    })
 });
 
 const readline = require('readline')
@@ -39,7 +46,6 @@ rl.on('line', function (line) {
     }
     processed[line] = true
     if (cnpj.exists(line)) {
-        console.log('Processing: ', line, 'cached, skipping...')
         return
     }
 
@@ -62,7 +68,7 @@ function fetchOne(line) {
         })
         .catch(err => {
             cnpj.failed(line, err)
-            console.error(err)
+            console.error('  Error:', err.code, err.message)
             if (err.unrecoverable || err.code === 'ECONNRESET') {
                 throw err
             }
