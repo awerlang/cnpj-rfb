@@ -25,6 +25,7 @@ As informações das empresas estarão no arquivo `./data/db.json`.
 * [ ] Recuperar a informação do QSA
     * [X] Salvar retorno em arquivo
     * [X] Extrair nome e qualificacao
+    * [ ] Quando filial, buscar dados da matriz
 * [X] Recuperar CNPJs em lote
 
 # Licença
